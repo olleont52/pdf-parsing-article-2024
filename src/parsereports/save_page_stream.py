@@ -1,7 +1,7 @@
+import pdf_storage
 from parsereports.basicparsing import BasicPdfParser
-from pdf_storage import table_report_file_path
 
-INPUT_FILE_PATH = table_report_file_path
+INPUT_FILE_PATH = pdf_storage.table_report_file_path
 PAGE_INDEX = 0
 SAVED_FILE_PATH = "stream.txt"
 
