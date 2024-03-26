@@ -32,8 +32,29 @@ class PdfWithFiguresRenderer(BaseReportRenderer):
             preserveAspectRatio=True
         )
         c.setLineWidth(10 * mm)
-        c.setStrokeColorRGB(0, 192, 0)
+        c.setStrokeColorRGB(0, 0, 64)
         c.line(0, 0, self._page_width_pt, self._page_height_pt)
+
+        x_centre = self._page_width_pt - 50 * mm
+        y_centre_polygon = 100 * mm
+        y_centre_circle = 50 * mm
+
+        c.setLineWidth(0.5)
+        c.setStrokeColorRGB(64, 0, 0)
+        c.setFillColorRGB(128, 0, 0)
+        c.circle(x_centre, y_centre_circle, 20, stroke=0, fill=1)
+
+        c.setLineWidth(0.5)
+        c.setStrokeColorRGB(0, 64, 0)
+        c.setFillColorRGB(0, 128, 0)
+        polygon = c.beginPath()
+        polygon.moveTo(x_centre - 10, y_centre_polygon + 25)
+        for offset_x, offset_y in (
+                (10, 25), (25, 10), (25, -10), (10, -25),
+                (-10, -25), (-25, -10), (-25, 10), (-10, 25)
+        ):
+            polygon.lineTo(x_centre + offset_x, y_centre_polygon + offset_y)
+        c.drawPath(polygon, stroke=0, fill=1)
 
 
 def main():
