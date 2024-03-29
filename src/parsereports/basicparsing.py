@@ -17,6 +17,11 @@ class BasicPdfParser:
             self._pq.load()
         return self._pq
 
+    def close(self) -> None:
+        pq = self._pq
+        if pq is not None and pq.file is not None:
+            pq.file.close()
+
     def get_page_data(self, page_index: int) -> LTPage:
         return self.pq.pq(f"LTPage[page_index=\"{page_index}\"]")
 

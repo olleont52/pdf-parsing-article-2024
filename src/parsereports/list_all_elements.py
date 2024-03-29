@@ -46,6 +46,7 @@ def main():
     all_elements = parser.get_all_page_elements(0)
     for element in all_elements:
         print(describe_element(element))
+    parser.close()
 
 
 if __name__ == '__main__':

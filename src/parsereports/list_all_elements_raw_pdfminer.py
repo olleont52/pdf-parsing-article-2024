@@ -14,7 +14,7 @@ def print_item(indent: str, layout_item: LTItem) -> None:
     line_start = indent + " "
     if hasattr(layout_item, "get_text"):
         line_start += f"\"{layout_item.get_text().rstrip()}\" "
-    print(f"{line_start} {layout_item}")
+    print(f"{line_start}{layout_item}")
 
     if isinstance(layout_item, LTContainer):
         for child in layout_item:
