@@ -1,51 +1,37 @@
-from typing import Optional, Type, Iterable
+from typing import Optional, Any, Dict
 
-import pdfminer.layout
-from pdfminer.layout import LTPage, LTItem
+from pdfminer.layout import LTPage
 from pdfquery import PDFQuery
 from pdfquery.pdfquery import LayoutElement
 
 
-def get_layout_types() -> list[Type[LTItem]]:
-    all_classes = []
-    for attr_name in dir(pdfminer.layout):
-        if attr_name.startswith("LT") \
-                and isinstance(element_class := getattr(pdfminer.layout, attr_name), type) \
-                and issubclass(element_class, LTItem):
-            all_classes.append(element_class)
-    return all_classes
-
-
 class BasicPdfParser:
-    def __init__(self, pdf_file_path: str):
+    def __init__(
+            self,
+            pdf_file_path: str,
+            pq_params: Optional[Dict[str, Any]] = None
+    ):
         self._file_path = pdf_file_path
         self._pq: Optional[PDFQuery] = None
+        self._pq_params = pq_params or {}
 
     @property
     def pq(self) -> PDFQuery:
-        if self._pq is None:
-            self._pq = PDFQuery(self._file_path)
-            self._pq.load()
+        self.init_pq()
         return self._pq
 
-    def get_page_data(
-            self,
-            page_index: int
-    ) -> LTPage:
+    def init_pq(self) -> None:
+        if self._pq is None:
+            self._pq = PDFQuery(self._file_path, **self._pq_params)
+            self._pq.load()
+
+    def close(self) -> None:
+        pq = self._pq
+        if pq is not None and pq.file is not None:
+            pq.file.close()
+
+    def get_page_data(self, page_index: int) -> LTPage:
         return self.pq.pq(f"LTPage[page_index=\"{page_index}\"]")
 
-    def get_page_elements(
-            self,
-            page_index: int,
-            element_class_names: Iterable[str]
-    ) -> list[LayoutElement]:
-        elements = []
-        for class_name in element_class_names:
-            elements.extend(self.pq.pq(f"LTPage[page_index=\"{page_index}\"] {class_name}"))
-        return elements
-
     def get_all_page_elements(self, page_index: int) -> list[LayoutElement]:
-        return self.get_page_elements(
-            page_index=page_index,
-            element_class_names=(t.__name__ for t in get_layout_types())
-        )
+        return self.pq.pq(f"LTPage[page_index=\"{page_index}\"] *")

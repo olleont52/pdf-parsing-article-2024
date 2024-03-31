@@ -31,22 +31,19 @@ class PdfWithFiguresRenderer(BaseReportRenderer):
             height=50 * mm,
             preserveAspectRatio=True
         )
-        c.setLineWidth(10 * mm)
-        c.setStrokeColorRGB(0, 0, 64)
-        c.line(0, 0, self._page_width_pt, self._page_height_pt)
 
         x_centre = self._page_width_pt - 50 * mm
-        y_centre_polygon = 100 * mm
-        y_centre_circle = 50 * mm
+        y_centre_polygon = self._page_height_pt - 100 * mm
+        y_centre_circle = self._page_height_pt - 50 * mm
 
-        c.setLineWidth(0.5)
-        c.setStrokeColorRGB(64, 0, 0)
-        c.setFillColorRGB(128, 0, 0)
-        c.circle(x_centre, y_centre_circle, 20, stroke=0, fill=1)
+        c.setLineWidth(2)
+        c.setStrokeColorRGB(0.5, 0, 0)
+        c.setFillColorRGB(1.0, 0, 0)
+        c.circle(x_centre, y_centre_circle, 25, stroke=1, fill=1)
 
-        c.setLineWidth(0.5)
-        c.setStrokeColorRGB(0, 64, 0)
-        c.setFillColorRGB(0, 128, 0)
+        c.setLineWidth(2)
+        c.setStrokeColorRGB(0, 0.5, 0)
+        c.setFillColorRGB(0, 1.0, 0)
         polygon = c.beginPath()
         polygon.moveTo(x_centre - 10, y_centre_polygon + 25)
         for offset_x, offset_y in (
@@ -54,7 +51,7 @@ class PdfWithFiguresRenderer(BaseReportRenderer):
                 (-10, -25), (-25, -10), (-25, 10), (-10, 25)
         ):
             polygon.lineTo(x_centre + offset_x, y_centre_polygon + offset_y)
-        c.drawPath(polygon, stroke=0, fill=1)
+        c.drawPath(polygon, stroke=1, fill=1)
 
 
 def main():

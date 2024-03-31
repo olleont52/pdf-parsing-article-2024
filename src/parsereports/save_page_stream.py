@@ -16,6 +16,7 @@ def main():
     pdf_doc = parser.pq.doc
     page_dict = pdf_doc.catalog["Pages"].resolve()["Kids"][page_index].resolve()
     page_content_stream = page_dict["Contents"].resolve()
+    parser.close()
 
     with open(saved_file_path, 'wb') as f:
         f.write(page_content_stream.data)
