@@ -174,8 +174,9 @@ class ChartsReportRenderer(BaseReportRenderer, FontStylesReportMixin):
 
 
 def main():
+    answer = input("Clip line to the chart borders? (y/n, default=y): ") or "y"
     data_generator = ChartsReportDataGenerator()
-    data_generator.create_random_data(clip_charts=True)
+    data_generator.create_random_data(clip_charts=(answer.lower() == "y"))
     doc = ChartsReportRenderer(
         report_data=data_generator.data,
         pdf_file_path=pdf_storage.charts_report_file_path,
