@@ -15,6 +15,13 @@ def find_first_image_element(pq: PDFQuery, page_index: int) -> LayoutElement:
     return pq.pq(f"LTPage[page_index=\"{page_index}\"] LTImage")[0]
 
 
+def extract_image_data(pq: PDFQuery, page_index: int, image_element: LayoutElement) -> PDFStream:
+    # Extract the whole PDF page object with resources
+    page = pq.doc.catalog["Pages"].resolve()["Kids"][page_index].resolve()
+    # Find the attached resource object by the image name
+    return page["Resources"]["XObject"][image_element.layout.name].resolve()
+
+
 def decode_image(image_element: LayoutElement, image_data: PDFStream) -> Image.Image:
     # An image may be saved inside the document in various color modes, see the PDF specification.
     # Only a simple 8-bit RGB color space for displays is demonstrated in this example.
@@ -32,7 +39,9 @@ def main():
     parser = BasicPdfParser(INPUT_FILE_PATH)
 
     image_element = find_first_image_element(parser.pq, PAGE_INDEX)
-    image_data = image_element.layout.stream
+    print("Found an image with the resource name:", image_element.layout.name)
+
+    image_data = extract_image_data(parser.pq, PAGE_INDEX, image_element)
     width, height = image_data.attrs["Width"], image_data.attrs["Height"]
     print(f"Resolved a byte stream with data length {len(image_data.get_data())}, "
           f"image size in pixels: {width}x{height}")
