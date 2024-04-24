@@ -17,10 +17,11 @@ FONT_BOLD = "Bold"
 
 _FONT_PATHS = {
     FONT_BOLD: [
-        # TODO: Add Linux paths, too, and test
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
         r"C:\Windows\Fonts\LiberationSans-Bold.ttf",
     ],
     FONT_REGULAR: [
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
         r"C:\Windows\Fonts\LiberationSans-Regular.ttf",
     ]
 }
