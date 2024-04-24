@@ -1,6 +1,11 @@
 """
-An example of a table report created with ReportLab.
+Скрипт для создания табличного отчёта.
+После запуска он создаст файл table_report.pdf в папке pdf_storage.
+На примере этого отчёта в статье показано начало работы с pdfminer
+и создание page object.
+Также на примере этого отчёта работает образец тестов в parsereports/tests.py.
 """
+
 import datetime as dt
 import random
 import string

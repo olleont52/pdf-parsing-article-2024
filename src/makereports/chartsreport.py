@@ -1,3 +1,9 @@
+"""
+Скрипт для создания простейшего отчёта с графиками.
+После запуска он создаст файл chart_report.pdf в папке pdf_storage.
+На примере этого отчёта в статье показан эффект обрезки по контуру.
+"""
+
 import random
 from dataclasses import dataclass, field
 from math import sin, pi
@@ -174,7 +180,7 @@ class ChartsReportRenderer(BaseReportRenderer, FontStylesReportMixin):
 
 
 def main():
-    answer = input("Clip line to the chart borders? (y/n, default=y): ") or "y"
+    answer = input("Обрезать графики по границам координатной сетки? (y/n, default=y): ") or "y"
     data_generator = ChartsReportDataGenerator()
     data_generator.create_random_data(clip_charts=(answer.lower() == "y"))
     doc = ChartsReportRenderer(

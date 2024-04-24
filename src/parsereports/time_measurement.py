@@ -1,3 +1,10 @@
+"""
+Скрипт замеряет время, которое тратится на парсинг PDF
+с различными наборами включённых опций.
+Для измерений нужен файл отчёта, созданный скриптом makereports/tablereport.py,
+Замедления, вызванные эвристиками PDFQuery, наиболее заметны именно на отчётах,
+на которых много мелких близко расположенных элементов, и примером могут быть таблицы.
+"""
 import time
 from typing import Any
 
@@ -30,7 +37,7 @@ FULL_PARAMS = dict(
     round_digits=3,
     normalize_spaces=True,
     resort=True,
-    # Description of "laparams" can be found in class pdfminer.layout.LAParams
+    # Атрибуты "laparams" соответствуют параметрам конструктора класса pdfminer.layout.LAParams
     laparams=dict(
         line_overlap=0.5,
         char_margin=2.0,

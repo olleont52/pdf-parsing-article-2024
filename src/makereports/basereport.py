@@ -1,3 +1,7 @@
+"""
+Этот модуль содержит определения, общие для отчётов разных типов.
+"""
+
 from abc import ABC, abstractmethod
 from collections import namedtuple
 
@@ -8,6 +12,10 @@ Rect = namedtuple("Rect", "x0 y0 x1 y1")
 
 
 class BaseReportRenderer(ABC):
+    """
+    Базовый класс для создания отчётов с помощью reportlab.
+    """
+
     def __init__(
             self,
             pdf_file_path: str,
@@ -21,6 +29,12 @@ class BaseReportRenderer(ABC):
         self._page_margin_pt = 10 * mm
 
     def render_and_save(self) -> None:
+        """
+        Шаблонный метод для создания одностраничного отчёта.
+
+        Все операции по наполнению страницы в подклассах
+        добавляются в метод _draw_content.
+        """
         self._draw_content()
         c = self._canvas
         c.showPage()
