@@ -1,3 +1,8 @@
+"""
+Пример с извлечением метаданных из документа.
+Используется файл отчёта, созданный скриптом makereports/tablereport.py.
+"""
+
 import pdf_storage
 from parsereports.basicparsing import BasicPdfParser
 

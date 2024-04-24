@@ -1,9 +1,15 @@
+"""
+Этот скрипт распечатывает свойства всех объектов с первой страницы документа.
+Объекты извлекаются с помощью PDFQuery.
+По умолчанию используется файл отчёта, созданный скриптом makereports/tablereport.py,
+но можно ввести путь до любого документа.
+"""
+
 from pdfquery.pdfquery import LayoutElement
 
 import pdf_storage
 from parsereports.basicparsing import BasicPdfParser
 
-# INPUT_FILE_PATH = pdf_storage.figures_file_path
 INPUT_FILE_PATH = pdf_storage.table_report_file_path
 
 
@@ -40,8 +46,8 @@ def describe_element(element: LayoutElement) -> str:
 
 
 def main():
-    input_file_path = input(f"PDF file path (default=\"{INPUT_FILE_PATH}\"): ") or INPUT_FILE_PATH
-
+    input_file_path = input("Введите путь к файлу PDF или нажмите Enter "
+                            f"(по умолчанию будет прочитан файл \"{INPUT_FILE_PATH}\"): ") or INPUT_FILE_PATH
     parser = BasicPdfParser(input_file_path)
     all_elements = parser.get_all_page_elements(0)
     for element in all_elements:

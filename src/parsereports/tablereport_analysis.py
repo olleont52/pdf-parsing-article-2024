@@ -1,3 +1,11 @@
+"""
+Этот модуль не является запускаемым скриптом.
+Он содержит определения для анализа страницы табличного отчёта
+и пример формирования page object.
+Анализ рассчитан на отчёты, которые создаются скриптом makereports/tablereport.py.
+Примеры использования этих определений можно увидеть в тестах:
+parsereports/tests/test_able_analysis.py.
+"""
 from collections import defaultdict
 from dataclasses import dataclass, field
 from itertools import chain
@@ -9,18 +17,27 @@ from reportlab.lib.units import mm
 
 @dataclass
 class TableLegendField:
+    """
+    Элемент справочных сведений в левой части отчёта, включающий метку и значение.
+    """
     label: Optional[LayoutElement]
     value: Optional[LayoutElement]
 
 
 @dataclass
 class TableReportLegend:
+    """
+    Распознанные элементы справочных сведений в левой части отчёта.
+    """
     title: Optional[LayoutElement] = None
     fields: list[TableLegendField] = field(default_factory=list)
 
 
 @dataclass
 class TableReportTable:
+    """
+    Распознанные элементы из табличной части отчёта.
+    """
     table_rect: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
     vertical_lines: list[LayoutElement] = field(default_factory=list)
     vertical_lines_by_x: dict[float, list[LayoutElement]] = \
@@ -28,7 +45,7 @@ class TableReportTable:
     horizontal_lines: list[LayoutElement] = field(default_factory=list)
     horizontal_lines_by_y: dict[float, list[LayoutElement]] = \
         field(default_factory=lambda: defaultdict(list))
-    # Cells are organized: first index - by rows, second index - by columns
+    # Список ячеек: первый индекс - номер строки, второй - номер столбца
     cells: list[list[Optional[LayoutElement]]] = field(default_factory=list)
 
     @property
@@ -42,19 +59,43 @@ class TableReportTable:
 
 @dataclass
 class TableReportPage:
+    """
+    Корневой объект page object.
+
+    Можно делать все поля неизменяемыми, чтобы тесты случайно
+    не исказили результаты анализа, но для этого нужно усложнять код.
+    Для примера хватит простейшего варианта.
+    """
     legend = TableReportLegend()
     table = TableReportTable()
     all_elements: list[LayoutElement] = field(default_factory=list)
 
 
 class TableReportAnalyzer:
+    """
+    Анализатор, принимающий объекты со страницы
+    и создающий page object класса TableReportPage.
+
+    Код анализаторов может содержать сложную логику распознавания элементов,
+    которая не нужна для последующей работы с элементами.
+    Поэтому разумно отделять код анализатора от самого page object.
+    """
     def __init__(self):
+        """
+        Конструктор только создаёт анализатор с пустым page object.
+        """
         self.page_object = TableReportPage()
 
         self._all_elements: list[LayoutElement] = []
         self._all_text_elements: list[LayoutElement] = []
 
     def analyze(self, page_elements: Iterable[LayoutElement]) -> None:
+        """
+        После вызова analyze из поля page_object можно забирать результат.
+
+        :param page_elements: Набор объектов со страницы,
+            полученный от PDFQuery.
+        """
         self._all_elements = list(page_elements)
         self.page_object.all_elements = self._all_elements
         self._detect_text_elements()
@@ -101,7 +142,7 @@ class TableReportAnalyzer:
                                     table.table_rect[1]]
         row_length = len(cell_borders_x_positions) - 1
 
-        # Loop by rows: find texts between the upper and the lower border in the row
+        # Цикл по строкам: ищем все тексты между верхней и нижней границами строки.
         for row_top, row_bottom in zip(
                 cell_borders_y_positions[:-1],
                 cell_borders_y_positions[1:]
@@ -109,14 +150,15 @@ class TableReportAnalyzer:
             row: list[Optional[LayoutElement]] = [None] * row_length
             table.cells.append(row)
 
-            # Loop by columns: find texts between the left and the right border in the column
+            # Цикл по колонкам: ищем текст между левой и правой границами колонки.
             for col_index, (col_left, col_right) in enumerate(zip(
                     cell_borders_x_positions[:-1],
                     cell_borders_x_positions[1:])
             ):
-                # Search for a fitting text element
-                # (This algorithm should be re-written with lower complexity,
-                # but here we keep it as simple as possible to make it more obvious when reading)
+                # Ищем подходящий текстовый элемент
+                # (В теории можно уменьшить алгоритмическую сложность перебора
+                # за счёт предварительных сортировок, но для примера мы оставляем
+                # наиболее очевидный код, который легче прочитать сверху вниз)
                 for element in self._all_text_elements:
                     if (
                             element.layout.x0 >= col_left and
@@ -132,15 +174,17 @@ class TableReportAnalyzer:
         legend_elements = [element for element in self._all_text_elements
                            if element.layout.x0 < table_left_border]
 
-        # Sort text lines vertically from top to bottom
+        # Упорядочиваем строки текста сверху вниз
         legend_elements.sort(key=lambda element: round(-element.layout.y0))
 
-        # Take the first text as title
+        # Певую строку считаем заголовком
         legend = self.page_object.legend
         if legend_elements:
             legend.title = legend_elements.pop(0)
 
-        # Find pairs of label and value, allowing a discrepancy +/- 1 mm for the text vertical position
+        # Находим пары меток и значений.
+        # Допускается отклонение +/- 1 мм по вертикали,
+        # т.к. границы текста могут зависеть от размера символов.
         max_vertical_shift = 1 * mm
         while legend_elements:
             label = legend_elements.pop(0)

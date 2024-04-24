@@ -1,6 +1,11 @@
 """
-Defines font management for a report
+Этот модуль содержит общие определения для добавления шрифтов в отчёты.
+Для успешного создания отчётов должен быть установлен шрифт TTF LiberationSans
+(обычно входит в дистрибутив LibreOffice).
+Если у вас нет таких шрифтов, или отличается системный путь к ним,
+можно добавить собственные варианты в словарь в этом модуле.
 """
+
 import os
 from itertools import chain
 
@@ -12,10 +17,11 @@ FONT_BOLD = "Bold"
 
 _FONT_PATHS = {
     FONT_BOLD: [
-        # TODO: Add Linux paths, too, and test
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
         r"C:\Windows\Fonts\LiberationSans-Bold.ttf",
     ],
     FONT_REGULAR: [
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
         r"C:\Windows\Fonts\LiberationSans-Regular.ttf",
     ]
 }
@@ -33,8 +39,9 @@ class FontStylesReportMixin:
 
         if set(font_file_paths.keys()) != set(verified_fonts.keys()):
             raise EnvironmentError(
-                "Some fonts have not been found in the system. "
-                f"Searched in locations: {list(chain(*font_file_paths.values()))}"
+                "Необходимые шрифты для создания отчёта не были обнаружены в системе. "
+                f"Поиск производился по пути: {list(chain(*font_file_paths.values()))}. "
+                f"Вы можете добавить собственные пути к шрифтам в модуль {os.path.abspath(__file__)}"
             )
         return verified_fonts
 
