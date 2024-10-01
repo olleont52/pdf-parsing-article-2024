@@ -5,7 +5,7 @@
 
 [Проверка содержимого PDF-файлов средствами Python и pdfminer. Часть 1](https://habr.com/ru/companies/auriga/articles/843774/)
 
-(часть 2-я и последняя ожидается в октябре '24)
+[Проверка содержимого PDF-файлов средствами Python и pdfminer. Часть 2](https://habr.com/ru/companies/auriga/articles/845926/)
 
 ## Настройка проекта
 
